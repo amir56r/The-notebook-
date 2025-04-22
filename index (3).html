@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notebook</title>
+    <link rel="stylesheet" href="style.css" type="text/css" media="all" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Added class here for easier mobile view switching -->
+    <div class="app-container">
+        <header class="app-header">
+            <h1><i class="fas fa-book-open"></i> My Notebook</h1>
+            <div class="search-container">
+                 <i class="fas fa-search search-icon"></i>
+                <input type="search" id="search-input" placeholder="Search notes...">
+            </div>
+        </header>
+
+        <main class="main-content">
+            <!-- Sidebar for Notes List -->
+            <aside class="sidebar">
+                <div class="sidebar-header">
+                    <h2>Notes</h2>
+                    <!-- Button removed from here -->
+                </div>
+                <ul id="notes-list" class="notes-list">
+                    <!-- Notes will be dynamically added here -->
+                </ul>
+                <!-- .sidebar-actions div removed -->
+            </aside>
+
+            <!-- Editor Area -->
+            <section id="editor-section" class="editor-container">
+                 <div id="editor-placeholder" class="editor-placeholder">
+                    <i class="fas fa-feather-alt"></i>
+                    <p>Select a note to edit or create a new one.</p>
+                </div>
+                <div id="editor-content" class="editor-content hidden">
+                    <input type="text" id="note-title-input" placeholder="Note Title">
+                    <div id="note-content-editable" contenteditable="true" spellcheck="false" placeholder="Write your note here..."></div>
+                    <div class="editor-actions">
+                         <button id="bold-btn" class="action-button format-button" title="Bold Text"><i class="fas fa-bold"></i></button>
+                         <button id="image-btn" class="action-button format-button" title="Add Image"><i class="fas fa-image"></i></button>
+                         <input type="file" id="image-upload" accept="image/*" style="display: none;">
+
+                         <button id="save-note-btn" class="action-button save-button" title="Save Note"><i class="fas fa-save"></i> Save</button>
+                         <button id="delete-note-btn" class="action-button delete-button" title="Delete Note"><i class="fas fa-trash-alt"></i> Delete</button>
+                    </div>
+                    <div id="status-message" class="status-message"></div>
+                </div>
+            </section>
+        </main> <!-- End main-content -->
+
+        <!-- New Floating Action Button (FAB) -->
+        <button id="fab-add-note-btn" class="fab-add-note" title="Add New Note">
+            <i class="fas fa-plus"></i>
+        </button>
+
+        <!-- Bottom Navigation Bar -->
+        <nav class="bottom-nav">
+            <button id="nav-home-btn" title="Home / View List">
+                <i class="fas fa-home"></i>
+                <span>Home</span>
+            </button>
+             <button id="nav-notes-btn" title="Notes View" class="active">
+                <i class="fas fa-clipboard-list"></i>
+                 <span>Notes</span>
+             </button>
+        </nav>
+
+        <footer class="app-footer">
+            <!-- Footer is empty -->
+        </footer>
+    </div> <!-- End app-container -->
+
+    <script src="script.js"></script>
+</body>
+</html>

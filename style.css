@@ -1,0 +1,310 @@
+/* --- General Reset & Defaults --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+    /* Prevent pull-to-refresh slightly */
+    overscroll-behavior-y: contain;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';
+    background-color: #fdf8f3; /* Orange theme background */
+    color: #444;
+    line-height: 1.6;
+    /* Prevent body scrolling, manage within app */
+    overflow: hidden;
+    height: 100vh; /* Full viewport height */
+    width: 100vw; /* Full viewport width */
+}
+
+/* --- App Container --- */
+.app-container {
+    background-color: #ffffff;
+    border-radius: 8px; /* Only on desktop */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Only on desktop */
+    width: 100%;
+    height: 100%;
+    max-width: 1200px; /* Max width on desktop */
+    margin: 0 auto; /* Center on desktop */
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    overflow: hidden; /* Crucial: prevent app container itself from scrolling */
+}
+
+/* --- Header --- */
+.app-header {
+    background-color: #F57C00; /* Primary Orange */
+    color: #ffffff;
+    padding: 10px 15px; /* Consistent padding */
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    flex-shrink: 0; /* Prevent shrinking */
+    z-index: 10;
+    position: relative; /* Ensure stacking context */
+}
+
+.app-header h1 { margin: 0; font-size: 1.3em; white-space: nowrap; }
+.app-header h1 i { margin-right: 8px; }
+
+.search-container {
+    position: relative; display: flex; align-items: center;
+    background-color: rgba(255, 255, 255, 0.9); border-radius: 18px;
+    padding: 1px 4px; min-width: 150px; flex-grow: 0.5; max-width: 320px; height: 36px;
+}
+.search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: #aaa; font-size: 0.9em; }
+#search-input {
+    border: none; outline: none; padding: 6px 10px 6px 30px; border-radius: 18px;
+    width: 100%; font-size: 0.9em; background-color: transparent; color: #333;
+}
+#search-input::placeholder { color: #999; }
+
+/* --- Main Content Area --- */
+.main-content {
+    display: flex;
+    flex: 1; /* Takes up remaining vertical space */
+    overflow: hidden; /* VERY important: Prevents this area scrolling */
+    position: relative; /* Needed for absolute children positioning (mobile view) */
+}
+
+/* --- Sidebar --- */
+.sidebar {
+    width: 260px; /* Desktop width */
+    border-right: 1px solid #eee;
+    display: flex;
+    flex-direction: column;
+    background-color: #fffaf5;
+    flex-shrink: 0;
+    height: 100%; /* Fill parent height */
+    overflow: hidden; /* Container doesn't scroll */
+    position: relative; /* Default position */
+    transition: transform 0.3s ease-in-out; /* For mobile slide */
+    z-index: 20; /* Above editor by default */
+}
+
+.sidebar-header {
+    padding: 12px 15px; border-bottom: 1px solid #eee;
+    display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+}
+.sidebar-header h2 { font-size: 1.1em; color: #555; margin: 0; }
+
+.notes-list {
+    list-style: none;
+    overflow-y: auto; /* <<< LIST SCROLLS HERE */
+    flex-grow: 1; /* Takes remaining space in sidebar */
+    padding-bottom: 10px;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll iOS */
+}
+
+.notes-list li {
+    padding: 10px 15px; cursor: pointer; border-bottom: 1px solid #f5f5f5;
+    transition: background-color 0.2s ease; font-size: 0.9em;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #555;
+}
+.notes-list li:hover { background-color: #FFF3E0; }
+.notes-list li.selected-note { background-color: #FFE0B2; font-weight: 600; color: #BF360C; }
+.notes-list li:last-child { border-bottom: none; }
+.notes-list .no-notes { padding: 15px; color: #999; font-style: italic; font-size: 0.9em; cursor: default; }
+.notes-list li.hidden { display: none; }
+
+/* --- Editor Area --- */
+.editor-container {
+    flex-grow: 1; /* Takes remaining space on desktop */
+    display: flex; /* Always flex */
+    flex-direction: column;
+    position: relative; /* Needed for placeholder & mobile view */
+    height: 100%; /* Fill parent height */
+    overflow: hidden; /* Container doesn't scroll */
+    background-color: #fff; /* Ensure background */
+    padding: 15px;
+    transition: transform 0.3s ease-in-out; /* For mobile slide */
+    z-index: 10; /* Below sidebar by default */
+}
+
+.editor-placeholder {
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+    padding: 20px; background-color: #fff; z-index: 1;
+    color: #bbb; text-align: center; pointer-events: none;
+}
+.editor-placeholder i { font-size: 3em; margin-bottom: 15px; }
+.editor-placeholder.hidden { display: none; }
+
+.editor-content {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Fill editor-container */
+    opacity: 1; transition: opacity 0.3s ease; z-index: 0;
+    visibility: visible; position: relative; /* Needs to be relative */
+}
+.editor-content.hidden { opacity: 0; visibility: hidden; position: absolute; top:0; left:0; right: 0; bottom: 0; pointer-events: none; }
+
+#note-title-input {
+    font-size: 1.3em; font-weight: 600; padding: 8px 0px; margin-bottom: 12px;
+    border: none; border-bottom: 2px solid #eee; outline: none;
+    background-color: transparent; flex-shrink: 0; color: #333;
+}
+#note-title-input:focus { border-bottom-color: #F57C00; }
+
+#note-content-editable {
+    flex-grow: 1; /* <<< TAKES UP SPACE IN EDITOR */
+    font-family: inherit; font-size: 1em; padding: 12px;
+    border: 1px solid #e0e0e0; border-radius: 4px; outline: none;
+    line-height: 1.7; margin-bottom: 10px;
+    overflow-y: auto; /* <<< EDITOR CONTENT SCROLLS HERE */
+    background-color: #fff; color: #333;
+    -webkit-overflow-scrolling: touch; /* Smooth scroll iOS */
+    min-height: 100px; /* Minimum height */
+}
+#note-content-editable:focus { border-color: #F57C00; box-shadow: 0 0 0 2px rgba(245, 124, 0, 0.2); }
+#note-content-editable:empty::before { content: attr(placeholder); color: #bbb; pointer-events: none; display: block; }
+#note-content-editable img { max-width: 100%; height: auto; display: block; margin: 10px auto; border-radius: 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+
+.editor-actions {
+    display: flex; justify-content: flex-end; align-items: center; gap: 8px;
+    border-top: 1px solid #eee; padding-top: 10px; flex-shrink: 0; flex-wrap: wrap;
+}
+.editor-actions .format-button { background-color: #f0f0f0; color: #555; padding: 5px 8px; margin-right: auto; }
+.editor-actions .format-button:hover { background-color: #e0e0e0; }
+
+.action-button {
+    padding: 6px 12px; border: none; border-radius: 4px; cursor: pointer; font-size: 0.85em;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease; display: inline-flex;
+    align-items: center; gap: 4px; font-weight: 500;
+}
+.action-button i { font-size: 0.9em; }
+.action-button:hover { box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1); }
+.save-button { background-color: #F57C00; color: white; }
+.save-button:hover { background-color: #E65100; }
+.delete-button { background-color: #e53935; color: white; }
+.delete-button:hover { background-color: #c62828; }
+
+.status-message {
+    width: 100%; text-align: left; margin-top: 8px; padding: 0 5px; font-size: 0.8em;
+    colore#e53935 !important; min-height: 1.2em; opacity: 0; transition: opacity 0.5s ease;
+    order: 3; flex-basis: 100%;
+}
+.status-message.visible { opacity: 1; }
+.status-message[style*="#e53935"] { color: #e53935 !important; } /* Match JS error red */
+
+
+/* --- Floating Action Button (FAB) --- */
+.fab-add-note {
+    position: fixed; /* Fixed relative to viewport */
+    bottom: 75px; /* Nav height (60) + gap (15) */
+    right: 20px;
+    width: 56px; height: 56px; background-color: white;
+    border: none; border-radius: 50%; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+    font-size: 1.6em; display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 1050; transition: background-color 0.2s ease, transform 0.2s ease;
+    outline: none;
+}
+.fab-add-note:hover { background-color: #45a049; transform: scale(1.05); }
+.fab-add-note:active { transform: scale(0.95); box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); }
+
+/* --- Bottom Navigation Bar --- */
+.bottom-nav {
+    position: fixed; /* Stay at bottom */
+    bottom: 0; left: 0; width: 100%; height: 60px;
+    background-color: #ffffff; border-top: 1px solid #e0e0e0;
+    display: flex; justify-content: space-around; align-items: stretch;
+    padding: 4px 0; box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06); z-index: 1000; /* Below FAB */
+}
+.bottom-nav button {
+    background: none; border: none; color: #888; cursor: pointer;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    font-size: 0.7em; padding: 4px 8px; transition: color 0.2s ease; flex-grow: 1;
+    line-height: 1.3; -webkit-tap-highlight-color: transparent;
+}
+.bottom-nav button i { font-size: 1.5em; margin-bottom: 2px; }
+.bottom-nav button:hover { color: #aaa; }
+.bottom-nav button.active { color: #F57C00; }
+.bottom-nav button.active:hover { color: #E65100; }
+
+/* --- Footer --- */
+.app-footer { display: none; /* Hide footer for simplicity */ }
+
+/* --- Utility Class --- */
+.hidden { display: none !important; }
+
+
+/* --- Responsive Overrides --- */
+@media (max-width: 768px) {
+    /* Use full viewport */
+    .app-container {
+        border-radius: 0;
+        box-shadow: none;
+        margin: 0;
+        max-width: none; /* Remove max-width */
+    }
+
+    /* Ensure header doesn't cause overflow */
+    .app-header {
+        padding: 10px 12px; /* Adjust padding */
+    }
+    .search-container {
+        min-width: 100px; /* Allow smaller search */
+        max-width: 250px;
+    }
+
+    /* --- Mobile View Switching Logic --- */
+    .main-content {
+        /* Already position: relative, overflow: hidden */
+    }
+
+    .sidebar {
+        position: absolute; /* Take out of flow */
+        top: 0; left: 0; width: 100%; height: 100%; /* Cover parent */
+        border-right: none;
+        transform: translateX(0%); /* Initially visible */
+        /* z-index: 20; */ /* Already set */
+    }
+
+    .editor-container {
+        position: absolute; /* Take out of flow */
+        top: 0; left: 0; width: 100%; height: 100%; /* Cover parent */
+        transform: translateX(100%); /* Initially offscreen */
+        padding: 10px; /* Adjust padding */
+        /* z-index: 10; */ /* Already set */
+    }
+
+    /* State when viewing a note */
+    .app-container.viewing-note .sidebar {
+        transform: translateX(-100%); /* Slide out */
+    }
+    .app-container.viewing-note .editor-container {
+        transform: translateX(0%); /* Slide in */
+    }
+    /* --- End Mobile View Switching Logic --- */
+
+
+    /* Adjust FAB for smaller screen */
+    .fab-add-note {
+        bottom: 70px; /* Nav height (60) + gap (10) */
+        right: 15px; width: 50px; height: 50px; font-size: 1.4em;
+    }
+
+    /* Adjust nav */
+    .bottom-nav { height: 60px; }
+}
+
+@media (max-width: 480px) {
+    .app-header { flex-direction: column; align-items: flex-start; } /* Stack header items */
+    .search-container { width: 100%; max-width: none; order: 3; margin-top: 8px; }
+
+    .editor-container { padding: 8px; }
+    #note-title-input { font-size: 1.2em; }
+    #note-content-editable { font-size: 0.95em; }
+
+    .bottom-nav { height: 55px; }
+    .bottom-nav button i { font-size: 1.4em; }
+    .fab-add-note { bottom: 65px; right: 12px; width: 48px; height: 48px; }
+}
